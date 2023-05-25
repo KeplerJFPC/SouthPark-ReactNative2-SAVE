@@ -1,0 +1,79 @@
+import axios from 'axios';
+import { first } from 'cheerio/lib/api/traversing';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView, ImageBackground } from 'react-native';
+
+const DetailsScreen = ({ route }) => {
+  const { user, imageUrl } = route.params;
+
+  //crear un estado que guarde dos variables el primer episodio de aparicion y el ultimo
+  const [firstEpisode, setFirstEpisode] = useState('');
+  const [lastEpisode, setLastEpisode] = useState('');
+
+  useEffect(() => {
+    if (user.episodes.length) {
+      obtenerEpisodios();
+    }
+  }, []);
+
+  const obtenerEpisodios = async () => {
+    try {
+      // guardar el nombre del primer episodio en la variable firstEpisode
+      const resultado = await axios.get(user.episodes[0]);
+      setFirstEpisode(resultado.data.data.name);
+
+      // guardar el nombre del ultimo episodio en la variable lastEpisode
+      const resultado2 = await axios.get(user.episodes[user.episodes.length - 1]);
+      setLastEpisode(resultado2.data.data.name)
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <Image source={{ uri: imageUrl }} style={styles.img} />
+        <Text>Numero: {user.id}</Text>
+        <Text>Nombre: {user.name}</Text>
+        <Text>Edad: {user?.age ?? 'Desconocido'}</Text>
+        <Text>Sexo: {user?.sex ?? 'Desconocido'}</Text>
+        <Text>Ocupación: {user?.occupation ?? 'Desconocido'}</Text>
+        <Text>Religion: {user?.religion ?? 'Desconocida'}</Text>
+        <Text>Numero de Apariciones: {user.episodes.length}</Text>
+        {
+          user.episodes.length > 0 ?
+            <Text>Primer Episodio: {firstEpisode}</Text> // Si el numero de apariciones es mayor a 0, mostrar el primer y ultimo episodio
+            : null
+        }
+        {
+          user.episodes.length > 0 ?
+            <Text>Ultimo Episodio: {lastEpisode}</Text> // Si el numero de apariciones es mayor a 0, mostrar el primer y ultimo episodio
+            : null
+        }
+      </View>
+    </SafeAreaView>
+
+  )
+};
+
+export default DetailsScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scrollView: {
+    backgroundColor: 'pink',
+    marginHorizontal: 20,
+  },
+  image: {
+    flex: 1,
+    resizeMode: "cover",
+  },
+
+})

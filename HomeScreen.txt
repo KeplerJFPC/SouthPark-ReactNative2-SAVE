@@ -1,0 +1,87 @@
+import React, { useEffect, useState } from "react";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { StyleSheet, Text, View, Image } from 'react-native'
+import axios from 'axios';
+import ScraperComponent from "./scripts/ScraperComponent";
+
+const HomeScreen = ({ navigation }) => {
+    const [data, setData] = useState([]);
+    const [imageUrl, setImageUrl] = useState('');
+
+    useEffect(() => {
+        obtenerDatos();
+    }, []);
+
+    const obtenerDatos = async () => {
+        const controller = new AbortController();
+        try
+        {
+            const resultado = await axios.get('https://spapi.dev/api/characters/20');
+            setData(resultado.data.data);
+            console.log(axios.signal)
+            controller.abort();
+            console.log(controller.signal.aborted ? "aborted" : "not aborted");
+        }
+        catch (error)
+        {
+            controller.abort();
+        }
+    }
+
+    return (
+        <View style={styles.container}>
+            <ScraperComponent palabra={data.name} onImageUrl={setImageUrl} />
+            {
+                imageUrl == '' ? console.log('Obteniendo imagen ...') : <Image source={{ uri: imageUrl }} style={styles.img} />
+            }
+            <Text style={styles.title}>{data.name}</Text>
+            <TouchableOpacity
+                style={styles.btn}
+                onPress={() => navigation.navigate("DetailsScreen", { user: data, imageUrl: imageUrl })}
+            >
+                <Text style={styles.text}>Detalles</Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
+
+export default HomeScreen
+
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#121212",
+    },
+    img: {
+        height: "50%",
+        width: "50%",
+        resizeMode: "contain",
+    },
+    title: {
+        color: "#FFF",
+        fontSize: 30,
+        marginTop: 20,
+    },
+    detail: {
+        color: "#FFF",
+        fontSize: 18,
+        textAlign: "center",
+        paddingHorizontal: 20,
+        lineHeight: 30,
+        marginTop: 30,
+    },
+    btn: {
+        marginTop: 30,
+        backgroundColor: "#E2443B",
+        paddingHorizontal: 100,
+        paddingVertical: 10,
+        borderRadius: 30,
+    },
+    text: {
+        fontSize: 30,
+        color: "#FFF",
+    },
+});
