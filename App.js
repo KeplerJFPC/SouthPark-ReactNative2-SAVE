@@ -58,6 +58,7 @@ function TabsScreen() {
           )
         }} />
         <Tab.Screen name="Personajes" component={PersonajeStacksScreen} options={{
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <Ionicons name={"ios-people"} size={20} color={color} />
           )
@@ -75,7 +76,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Drawer.Navigator initialRouteName="Tabs">
-        <Drawer.Screen name="Tabs" component={TabsScreen} />
+        <Drawer.Screen name="SouthPark-API" component={TabsScreen} />
         <Drawer.Screen name="Mapa" component={MapaScreen} />
         <Drawer.Screen name="About" component={AboutScreen} />
       </Drawer.Navigator>
